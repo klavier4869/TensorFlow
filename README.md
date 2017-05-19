@@ -1,1 +1,1 @@
-TensorFlow
+TensorFlowでいろいろ実験する用のリポジトリ
