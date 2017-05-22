@@ -48,7 +48,10 @@ def train():
     diff = tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y)
     with tf.name_scope('total'):
       cross_entropy = tf.reduce_mean(diff)
-  tf.summary.scalar('cross_entropy', cross_entropy)
+    with tf.name_scope('weight_decay'):
+      tf.add_to_collection('losses', cross_entropy)
+      loss = tf.add_n(tf.get_collection('losses'), name='total_loss')
+  tf.summary.scalar('loss', loss)
 
   with tf.name_scope('train'):
     train_step = tf.train.AdamOptimizer(FLAGS.learning_rate).minimize(
