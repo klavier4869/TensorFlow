@@ -45,6 +45,25 @@ def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu):
     tf.summary.histogram('activations', activations)
     return activations
 
+def cnn2d_layer(input_tensor, input_dim, output_dim, layer_name, filter_dim=5, act=tf.nn.relu):
+  with tf.name_scope(layer_name):
+    # This Variable will hold the state of the weights for the layer
+    with tf.name_scope('weights'):
+      weights = weight_variable([filter_dim, filter_dim, input_dim, output_dim])
+      variable_summaries(weights)
+    with tf.name_scope('biases'):
+      biases = bias_variable([output_dim])
+      variable_summaries(biases)
+    with tf.name_scope('conv2d'):
+      preactivate = tf.nn.conv2d(input_tensor, weights, strides=[1, 1, 1, 1], padding='SAME')
+      tf.summary.histogram('pre_activations', preactivate)
+    activations = act(preactivate, name='activation')
+    with tf.name_scope('max_pool_2x2'):
+      pool = tf.nn.max_pool(activations, ksize=[1, 2, 2, 1],
+                            strides=[1, 2, 2, 1], padding='SAME')
+    tf.summary.histogram('pool', pool)
+    return pool
+
 def initArgParser():
   parser = argparse.ArgumentParser()
   parser.add_argument('--fake_data', nargs='?', const=True, type=bool,
