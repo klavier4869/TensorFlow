@@ -1,6 +1,6 @@
 """classifier model
     |affine|→|relu|→|affine|→|relu|→|affine|→|relu|→|dropout|→|cross-entropy|
-    apply measures to eliminate gradient
+    apply measures to overfit
     - dropout
     - weight decay
 """
