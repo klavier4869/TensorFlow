@@ -1,5 +1,5 @@
 """classifier model
-    |affine|→|sigmoid|→|affine|→|sigmoid|→|affine|→|softmax|→|cross-entropy|
+    |affine|→|relu|→|affine|→|relu|→|affine|→|relu|→|cross-entropy|
 """
 from __future__ import absolute_import
 from __future__ import division
