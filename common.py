@@ -1,9 +1,14 @@
 import tensorflow as tf
 import argparse
 
-def weight_variable(shape):
+def weight_variable(shape, init_type):
   """Create a weight variable with appropriate initialization."""
-  initial = tf.truncated_normal(shape, stddev=0.1)
+  if(init_type == 1):
+      initial = tf.truncated_normal(shape, stddev=0.1)
+  elif(init_type == 2):
+      initial = tf.truncated_normal(shape, stddev=1)
+  elif(init_type == 3):
+      initial = tf.zeros(shape)
   return tf.Variable(initial)
 
 def bias_variable(shape):
@@ -23,7 +28,7 @@ def variable_summaries(var):
     tf.summary.scalar('min', tf.reduce_min(var))
     tf.summary.histogram('histogram', var)
 
-def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu):
+def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu, w_type=1):
   """Reusable code for making a simple neural net layer.
   It does a matrix multiply, bias add, and then uses relu to nonlinearize.
   It also sets up name scoping so that the resultant graph is easy to read,
@@ -33,7 +38,7 @@ def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu):
   with tf.name_scope(layer_name):
     # This Variable will hold the state of the weights for the layer
     with tf.name_scope('weights'):
-      weights = weight_variable([input_dim, output_dim])
+      weights = weight_variable([input_dim, output_dim], init_type=w_type)
       variable_summaries(weights)
     with tf.name_scope('biases'):
       biases = bias_variable([output_dim])
