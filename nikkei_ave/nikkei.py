@@ -1,7 +1,6 @@
 """ predicted closing price after 1day using data 30days ago
     data format
-    | year | month | day | opening | hight | low | closing
-    - date is deleted.
+    | year | month | day | opening | hight | low | closing |
     train_data: 2015
     test_data: 2016
 """
@@ -15,6 +14,8 @@ class NikkeiData:
     def __init__(self):
         self.dataset = {}
         self.test = {}
+        self.in_size = 30 # 30days
+        self.out_size = 1 # 1day
         self._load_data()
 
     def _load_data(self):
@@ -36,20 +37,17 @@ class NikkeiData:
 
     def fetch_train(self, batch_size=100):
         train = {}
-        # train size offset
-        # 30:train in size, 1:train out size, 1:array subscript
-        offset = 32
+        offset = self.in_size + self.out_size # train size offset
         train_size = len(self.dataset['train']) - offset
         batch_mask = np.random.choice(train_size, batch_size)
         train['input'] = np.array([self.dataset['train'][v : v+30] for v in batch_mask])
         train['output'] = np.array([self.dataset['train'][v+31][6] for v in batch_mask])
         return train
     def fetch_test(self):
+        """ cahce test data """
         if len(self.test) > 0:
             return self.test
-        # test size offset
-        # 30:train in size, 1:train out size
-        offset = 31
+        offset = self.in_size + self.out_size # test size offset
         test_size = len(self.dataset['test']) - offset
         self.test['input'] = np.array([self.dataset['test'][v : v+30] for v in range(test_size)])
         self.test['output'] = np.array([self.dataset['test'][v][6] for v in range(test_size)])
