@@ -1,5 +1,6 @@
 """classifier model
-    |affine|→|softmax|→|cross-entropy|
+    |conv| → |relu| → |pool| → |conv| →  |relu| →  |pool| →
+    |affine| →  |relu| →  |dropout|
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -26,8 +27,8 @@ def train():
 
   hidden1 = cnn2d_layer(x_stock, 1, 32, 'hidden1')
   hidden2 = cnn2d_layer(hidden1, 32, 64, 'hidden2')
-  hidden2_flat = tf.reshape(hidden2, [-1, 7*7*64])
-  hidden3 = nn_layer(hidden2_flat, 7*7*64, 1024, 'hidden3')
+  hidden2_flat = tf.reshape(hidden2, [-1, 8*2*64])
+  hidden3 = nn_layer(hidden2_flat, 8*2*64, 1024, 'hidden3')
 
   # Do not apply softmax activation yet, see below.
   with tf.name_scope('dropout'):
@@ -39,7 +40,10 @@ def train():
   with tf.name_scope('loss'):
     diff = tf.nn.l2_loss(y_ - y)
     with tf.name_scope('total'):
-      loss = tf.reduce_mean(diff)
+      l2 = tf.reduce_mean(diff)
+    with tf.name_scope('weight_decay'):
+      tf.add_to_collection('losses', l2)
+      loss = tf.add_n(tf.get_collection('losses'), name='total_loss')
   tf.summary.scalar('loss', loss)
 
   with tf.name_scope('train'):
