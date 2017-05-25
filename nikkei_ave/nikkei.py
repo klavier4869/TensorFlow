@@ -1,8 +1,9 @@
 """ predicted closing price after 1day using data 30days ago
-    data format
-    | year | month | day | opening | hight | low | closing |
-    train_data: 2015
-    test_data: 2016
+    - data format
+     | year | month | day | opening | hight | low | closing |
+    - Slide 31 pieces of data.
+     train_data: 2010-2015 (1471 days worth) = num: 1441
+     test_data: 2016 (245 days worth) = num: 215
 """
 import os.path
 import os
@@ -37,7 +38,7 @@ class NikkeiData:
 
     def fetch_train(self, batch_size=100):
         train = {}
-        offset = self.in_size + self.out_size # train size offset
+        offset = self.in_size + self.out_size
         train_size = len(self.dataset['train']) - offset
         batch_mask = np.random.choice(train_size, batch_size)
         train['input'] = np.array([self.dataset['train'][v : v+30] for v in batch_mask])
@@ -47,7 +48,7 @@ class NikkeiData:
         """ cahce test data """
         if len(self.test) > 0:
             return self.test
-        offset = self.in_size + self.out_size # test size offset
+        offset = self.in_size + self.out_size
         test_size = len(self.dataset['test']) - offset
         self.test['input'] = np.array([self.dataset['test'][v : v+30] for v in range(test_size)])
         self.test['output'] = np.array([self.dataset['test'][v][6] for v in range(test_size)])
