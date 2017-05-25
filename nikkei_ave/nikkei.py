@@ -42,16 +42,19 @@ class NikkeiData:
         train_size = len(self.dataset['train']) - offset
         batch_mask = np.random.choice(train_size, batch_size)
         train['input'] = np.array([self.dataset['train'][v : v+30] for v in batch_mask])
-        train['output'] = np.array([self.dataset['train'][v+31][6] for v in batch_mask])
+        train['output'] = np.array([self.dataset['train'][v+30][6] for v in batch_mask])
+        train['output'] = train['output'].reshape(-1, 1)
         if isFlatten:
-            train['input'] = train['input'].reshape(batch_size, -1)
-        return train
-    def fetch_test(self):
+            train['input'] = train['input'].reshape(-1, 210)
+        return train['input'], train['output']
+    def fetch_test(self, isFlatten=True):
         """ cahce test data """
-        if len(self.test) > 0:
-            return self.test
-        offset = self.in_size + self.out_size - 1
-        test_size = len(self.dataset['test']) - offset
-        self.test['input'] = np.array([self.dataset['test'][v : v+30] for v in range(test_size)])
-        self.test['output'] = np.array([self.dataset['test'][v][6] for v in range(test_size)])
-        return self.test
+        if len(self.test) == 0:
+            offset = self.in_size + self.out_size - 1
+            test_size = len(self.dataset['test']) - offset
+            self.test['input'] = np.array([self.dataset['test'][v : v+30] for v in range(test_size)])
+            self.test['output'] = np.array([self.dataset['test'][v+30][6] for v in range(test_size)])
+            self.test['output'] = self.test['output'].reshape(-1, 1)
+        if isFlatten:
+            self.test['input'] = self.test['input'].reshape(-1, 210)
+        return self.test['input'], self.test['output']
