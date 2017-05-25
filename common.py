@@ -82,6 +82,6 @@ def initArgParser():
                       help='Keep probability for training dropout.')
   parser.add_argument('--data_dir', type=str, default='/tmp/tensorflow/mnist/input_data',
                       help='Directory for storing input data')
-  parser.add_argument('--log_dir', type=str, default='/tmp/tensorflow/mnist/logs/mnist_with_summaries',
+  parser.add_argument('--log_dir', type=str, default='/tmp/tensorflow/logs',
                       help='Summaries log directory')
   return parser
