@@ -50,11 +50,12 @@ def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu, w_
     tf.summary.histogram('activations', activations)
     return activations
 
-def cnn2d_layer(input_tensor, input_dim, output_dim, layer_name, filter_dim=5, act=tf.nn.relu):
+def cnn2d_layer(input_tensor, input_dim, output_dim,
+                    layer_name, filter_dim=5, act=tf.nn.relu, w_type=1):
   with tf.name_scope(layer_name):
     # This Variable will hold the state of the weights for the layer
     with tf.name_scope('weights'):
-      weights = weight_variable([filter_dim, filter_dim, input_dim, output_dim])
+      weights = weight_variable([filter_dim, filter_dim, input_dim, output_dim], w_type)
       variable_summaries(weights)
     with tf.name_scope('biases'):
       biases = bias_variable([output_dim])
