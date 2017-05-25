@@ -28,7 +28,7 @@ class NikkeiData:
             data = array.pop(0)
             data = data.split('-')
             data.extend(array)
-            return np.array(data, np.float64)
+            return np.array(data, np.float32)
         read_data = {}
         for k in file_names:
             with open(file_names[k], 'rt') as f:
