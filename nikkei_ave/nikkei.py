@@ -36,19 +36,21 @@ class NikkeiData:
                 read_data[k] = np.array([format_data(v) for v in csv_obj])
         self.dataset = read_data
 
-    def fetch_train(self, batch_size=100):
+    def fetch_train(self, batch_size=50, isFlatten=True):
         train = {}
-        offset = self.in_size + self.out_size
+        offset = self.in_size + self.out_size - 1
         train_size = len(self.dataset['train']) - offset
         batch_mask = np.random.choice(train_size, batch_size)
         train['input'] = np.array([self.dataset['train'][v : v+30] for v in batch_mask])
         train['output'] = np.array([self.dataset['train'][v+31][6] for v in batch_mask])
+        if isFlatten:
+            train['input'] = train['input'].reshape(batch_size, -1)
         return train
     def fetch_test(self):
         """ cahce test data """
         if len(self.test) > 0:
             return self.test
-        offset = self.in_size + self.out_size
+        offset = self.in_size + self.out_size - 1
         test_size = len(self.dataset['test']) - offset
         self.test['input'] = np.array([self.dataset['test'][v : v+30] for v in range(test_size)])
         self.test['output'] = np.array([self.dataset['test'][v][6] for v in range(test_size)])
