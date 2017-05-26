@@ -96,6 +96,10 @@ def train():
   train_writer.close()
   test_writer.close()
 
+  saver = tf.train.Saver()
+  save_path = saver.save(sess, "model/cnn/model.ckpt")
+  print("Model saved in file: %s" % save_path)
+
 def main(_):
   if tf.gfile.Exists(FLAGS.log_dir):
     tf.gfile.DeleteRecursively(FLAGS.log_dir)
