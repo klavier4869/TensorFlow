@@ -20,10 +20,10 @@ def train():
   sess = tf.InteractiveSession()
   # Create the model
   with tf.name_scope('input'):
-    x = tf.placeholder(tf.float32, [None, 210], name='x-input')
+    x = tf.placeholder(tf.float32, [None, 150], name='x-input')
     y_ = tf.placeholder(tf.float32, [None, 1], name='y-input')
 
-  hidden1 = nn_layer(x, 210, 1000, 'hidden1')
+  hidden1 = nn_layer(x, 150, 1000, 'hidden1')
   hidden2 = nn_layer(hidden1, 1000, 750, 'hidden2')
   hidden3 = nn_layer(hidden2, 750, 500, 'hidden3')
   hidden4 = nn_layer(hidden3, 500, 250, 'hidden4')

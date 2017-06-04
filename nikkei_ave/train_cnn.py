@@ -21,9 +21,9 @@ def train():
   sess = tf.InteractiveSession()
   # Create the model
   with tf.name_scope('input'):
-    x = tf.placeholder(tf.float32, [None, 210], name='x-input')
+    x = tf.placeholder(tf.float32, [None, 150], name='x-input')
     y_ = tf.placeholder(tf.float32, [None, 1], name='y-input')
-    x_stock = tf.reshape(x, [-1, 30, 7, 1])
+    x_stock = tf.reshape(x, [-1, 30, 5, 1])
 
   hidden1 = cnn2d_layer(x_stock, 1, 32, 'hidden1')
   hidden2 = cnn2d_layer(hidden1, 32, 64, 'hidden2')
