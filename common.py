@@ -77,11 +77,13 @@ def initArgParser():
                       help='If true, uses fake data for unit testing.')
   parser.add_argument('--max_steps', type=int, default=1000,
                       help='Number of steps to run trainer.')
+  parser.add_argument('--svg_interval', type=int, default=1000,
+                      help='Summaries log directory')
   parser.add_argument('--learning_rate', type=float, default=0.001,
                       help='Initial learning rate')
   parser.add_argument('--dropout', type=float, default=0.9,
                       help='Keep probability for training dropout.')
-  parser.add_argument('--data_dir', type=str, default='/tmp/tensorflow/mnist/input_data',
+  parser.add_argument('--data_dir', type=str, default='/tmp/tensorflow/input_data',
                       help='Directory for storing input data')
   parser.add_argument('--log_dir', type=str, default='/tmp/tensorflow/logs',
                       help='Summaries log directory')

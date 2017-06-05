@@ -11,6 +11,8 @@ sys.path.append(os.pardir)  # 親ディレクトリのファイルをインポ�
 sys.path.append(os.curdir)  # カレントディレクトリのファイルをインポートするための設定
 
 import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
 from common import *
 from nikkei import NikkeiData
 
@@ -58,8 +60,10 @@ def train():
   tf.summary.scalar('accuracy', accuracy)
 
   merged = tf.summary.merge_all()
-  train_writer = tf.summary.FileWriter(FLAGS.log_dir + '/train', sess.graph)
-  test_writer = tf.summary.FileWriter(FLAGS.log_dir + '/test')
+  train_writer = tf.summary.FileWriter(FLAGS.log_dir +
+                    '/tb/cnn_' + str(FLAGS.max_steps) + '/train', sess.graph)
+  test_writer = tf.summary.FileWriter(FLAGS.log_dir +
+                    '/tb/cnn_' + str(FLAGS.max_steps) + '/test')
   tf.global_variables_initializer().run()
 
   # Train
@@ -72,6 +76,17 @@ def train():
         xs, ys = nikkei.fetch_test()
         k = 1.0
     return {x: xs, y_: ys, keep_prob: k}
+
+  # save histgram svg
+  def save_hist(step):
+    xs, ys = nikkei.fetch_test()
+    output = np.array(sess.run([y], {x: xs, keep_prob: 1.0}))
+    output = output.reshape(-1)
+    ys = ys.reshape(-1)
+    loss = abs(output-ys)
+    plt.figure()
+    plt.hist(loss, bins=16)
+    plt.savefig(FLAGS.log_dir + '/svg/cnn_' + str(step) + '.svg')
 
   for i in range(FLAGS.max_steps):
     if i % 10 == 0:  # Record summaries and test-set accuracy
@@ -93,17 +108,22 @@ def train():
       else:  # Record a summary
         summary, _ = sess.run([merged, train_step], feed_dict=feed_dict(True))
         train_writer.add_summary(summary, i)
+    if i % FLAGS.svg_interval == 0:
+      save_hist(i)
   train_writer.close()
   test_writer.close()
 
-  saver = tf.train.Saver()
-  save_path = saver.save(sess, "model/cnn/model.ckpt")
-  print("Model saved in file: %s" % save_path)
+  # save train model
+  #saver = tf.train.Saver()
+  #save_path = saver.save(sess, FLAGS.log_dir +
+  #                  '/model/cnn_' + str(FLAGS.max_steps) + '_model.ckpt')
+  #print("Model saved in file: %s" % save_path)
+
 
 def main(_):
-  if tf.gfile.Exists(FLAGS.log_dir):
-    tf.gfile.DeleteRecursively(FLAGS.log_dir)
-  tf.gfile.MakeDirs(FLAGS.log_dir)
+  #if tf.gfile.Exists(FLAGS.log_dir):
+  #  tf.gfile.DeleteRecursively(FLAGS.log_dir)
+  #tf.gfile.MakeDirs(FLAGS.log_dir)
   train()
 
 if __name__ == '__main__':
