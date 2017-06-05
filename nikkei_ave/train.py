@@ -59,10 +59,8 @@ def train():
   tf.summary.scalar('accuracy', accuracy)
 
   merged = tf.summary.merge_all()
-  train_writer = tf.summary.FileWriter(FLAGS.log_dir +
-                    '/tb/dnn_' + str(FLAGS.max_steps) + '/train', sess.graph)
-  test_writer = tf.summary.FileWriter(FLAGS.log_dir +
-                    '/tb/dnn_' + str(FLAGS.max_steps) + '/test')
+  train_writer = tf.summary.FileWriter(FLAGS.log_dir + '/tb/dnn/train', sess.graph)
+  test_writer = tf.summary.FileWriter(FLAGS.log_dir + '/tb/dnn/test')
   tf.global_variables_initializer().run()
 
   # Train
@@ -87,7 +85,7 @@ def train():
     plt.hist(loss, bins=16)
     plt.savefig(FLAGS.log_dir + '/svg/dnn_' + str(step) + '.svg')
 
-  for i in range(FLAGS.max_steps):
+  for i in range(FLAGS.max_steps+1):
     if i % 10 == 0:  # Record summaries and test-set accuracy
       summary, acc = sess.run([merged, accuracy],
                         feed_dict=feed_dict(False))
@@ -117,15 +115,6 @@ def train():
   #save_path = saver.save(sess, FLAGS.log_dir +
   #              '/model/dnn_' + str(FLAGS.max_steps) + '.ckpt')
   #print("Model saved in file: %s" % save_path)
-
-  # output histgram svg
-  xs, ys = nikkei.fetch_test()
-  output = np.array(sess.run([y], {x: xs, keep_prob: 1.0}))
-  output = output.reshape(-1)
-  ys = ys.reshape(-1)
-  loss = abs(output-ys)
-  plt.hist(loss, bins=16)
-  plt.savefig(FLAGS.log_dir + '/svg/dnn_' + str(FLAGS.max_steps) + '.svg')
 
 def main(_):
   #if tf.gfile.Exists(FLAGS.log_dir):

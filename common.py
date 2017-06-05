@@ -78,7 +78,7 @@ def initArgParser():
   parser.add_argument('--max_steps', type=int, default=1000,
                       help='Number of steps to run trainer.')
   parser.add_argument('--svg_interval', type=int, default=1000,
-                      help='Summaries log directory')
+                      help='Number of interval to output svg.')
   parser.add_argument('--learning_rate', type=float, default=0.001,
                       help='Initial learning rate')
   parser.add_argument('--dropout', type=float, default=0.9,

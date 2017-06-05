@@ -7,8 +7,8 @@ from __future__ import division
 from __future__ import print_function
 
 import sys, os
-sys.path.append(os.pardir)  # 親ディレクトリのファイルをインポートするための設定
-sys.path.append(os.curdir)  # カレントディレクトリのファイルをインポートするための設定
+sys.path.append(os.pardir)
+sys.path.append(os.curdir)
 
 import tensorflow as tf
 import numpy as np
@@ -60,10 +60,8 @@ def train():
   tf.summary.scalar('accuracy', accuracy)
 
   merged = tf.summary.merge_all()
-  train_writer = tf.summary.FileWriter(FLAGS.log_dir +
-                    '/tb/cnn_' + str(FLAGS.max_steps) + '/train', sess.graph)
-  test_writer = tf.summary.FileWriter(FLAGS.log_dir +
-                    '/tb/cnn_' + str(FLAGS.max_steps) + '/test')
+  train_writer = tf.summary.FileWriter(FLAGS.log_dir + '/tb/cnn/train', sess.graph)
+  test_writer = tf.summary.FileWriter(FLAGS.log_dir + '/tb/cnn/test')
   tf.global_variables_initializer().run()
 
   # Train
@@ -88,7 +86,7 @@ def train():
     plt.hist(loss, bins=16)
     plt.savefig(FLAGS.log_dir + '/svg/cnn_' + str(step) + '.svg')
 
-  for i in range(FLAGS.max_steps):
+  for i in range(FLAGS.max_steps+1):
     if i % 10 == 0:  # Record summaries and test-set accuracy
       summary, acc = sess.run([merged, accuracy],
                         feed_dict=feed_dict(False))
