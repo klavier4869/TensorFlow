@@ -77,8 +77,8 @@ def initArgParser():
                       help='If true, uses fake data for unit testing.')
   parser.add_argument('--max_steps', type=int, default=1000,
                       help='Number of steps to run trainer.')
-  parser.add_argument('--svg_interval', type=int, default=1000,
-                      help='Number of interval to output svg.')
+  parser.add_argument('--hist_interval', type=int, default=1000,
+                      help='Number of interval to output histgram svg.')
   parser.add_argument('--learning_rate', type=float, default=0.001,
                       help='Initial learning rate')
   parser.add_argument('--dropout', type=float, default=0.9,

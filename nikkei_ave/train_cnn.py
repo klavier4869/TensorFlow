@@ -1,6 +1,5 @@
 """classifier model
-    |conv| → |relu| → |pool| → |conv| →  |relu| →  |pool| →
-    |affine| →  |relu| →  |dropout|
+    |conv| → |relu| → |pool| → |affine| →  |relu| →  |dropout|
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -23,20 +22,19 @@ def train():
   sess = tf.InteractiveSession()
   # Create the model
   with tf.name_scope('input'):
-    x = tf.placeholder(tf.float32, [None, 150], name='x-input')
-    y_ = tf.placeholder(tf.float32, [None, 1], name='y-input')
-    x_stock = tf.reshape(x, [-1, 30, 5, 1])
+    x = tf.placeholder(tf.float32, [None, nikkei.in_size], name='x-input')
+    y_ = tf.placeholder(tf.float32, [None, nikkei.out_size], name='y-input')
+    x_stock = tf.reshape(x, [-1, nikkei.in_days, nikkei.elem_size, 1])
 
   hidden1 = cnn2d_layer(x_stock, 1, 32, 'hidden1')
-  hidden2 = cnn2d_layer(hidden1, 32, 64, 'hidden2')
-  hidden2_flat = tf.reshape(hidden2, [-1, 8*2*64])
-  hidden3 = nn_layer(hidden2_flat, 8*2*64, 1024, 'hidden3')
+  hidden1_flat = tf.reshape(hidden1, [-1, 15*3*32])
+  hidden2 = nn_layer(hidden1_flat, 15*3*32, 1024, 'hidden2')
 
   # Do not apply softmax activation yet, see below.
   with tf.name_scope('dropout'):
     keep_prob = tf.placeholder(tf.float32)
     tf.summary.scalar('dropout_keep_probability', keep_prob)
-    dropped = tf.nn.dropout(hidden3, keep_prob)
+    dropped = tf.nn.dropout(hidden2, keep_prob)
   y = nn_layer(dropped, 1024, 1, 'dropout', act=tf.identity)
 
   with tf.name_scope('loss'):
@@ -75,8 +73,8 @@ def train():
         k = 1.0
     return {x: xs, y_: ys, keep_prob: k}
 
-  # save histgram svg
   def save_hist(step):
+    """ save histgram svg """
     xs, ys = nikkei.fetch_test()
     output = np.array(sess.run([y], {x: xs, keep_prob: 1.0}))
     output = output.reshape(-1)
@@ -106,7 +104,7 @@ def train():
       else:  # Record a summary
         summary, _ = sess.run([merged, train_step], feed_dict=feed_dict(True))
         train_writer.add_summary(summary, i)
-    if i % FLAGS.svg_interval == 0:
+    if i % FLAGS.hist_interval == 0:
       save_hist(i)
   train_writer.close()
   test_writer.close()
@@ -119,9 +117,15 @@ def train():
 
 
 def main(_):
-  #if tf.gfile.Exists(FLAGS.log_dir):
-  #  tf.gfile.DeleteRecursively(FLAGS.log_dir)
-  #tf.gfile.MakeDirs(FLAGS.log_dir)
+  # init tensor_borad_logdir
+  tensor_borad_logdir = FLAGS.log_dir + '/tb/cnn'
+  if tf.gfile.Exists(tensor_borad_logdir):
+    tf.gfile.DeleteRecursively(tensor_borad_logdir)
+  tf.gfile.MakeDirs(tensor_borad_logdir)
+  # init histgram_logdir
+  histgram_logdir = FLAGS.log_dir + '/svg'
+  if not tf.gfile.Exists(histgram_logdir):
+    tf.gfile.MakeDirs(histgram_logdir)
   train()
 
 if __name__ == '__main__':

@@ -6,8 +6,8 @@ from __future__ import division
 from __future__ import print_function
 
 import sys, os
-sys.path.append(os.pardir)  # 親ディレクトリのファイルをインポートするための設定
-sys.path.append(os.curdir)  # カレントディレクトリのファイルをインポートするための設定
+sys.path.append(os.pardir)
+sys.path.append(os.curdir)
 
 import tensorflow as tf
 import numpy as np
@@ -22,10 +22,10 @@ def train():
   sess = tf.InteractiveSession()
   # Create the model
   with tf.name_scope('input'):
-    x = tf.placeholder(tf.float32, [None, 150], name='x-input')
-    y_ = tf.placeholder(tf.float32, [None, 1], name='y-input')
+    x = tf.placeholder(tf.float32, [None, nikkei.in_size], name='x-input')
+    y_ = tf.placeholder(tf.float32, [None, nikkei.out_size], name='y-input')
 
-  hidden1 = nn_layer(x, 150, 1000, 'hidden1')
+  hidden1 = nn_layer(x, nikkei.in_size, 1000, 'hidden1')
   hidden2 = nn_layer(hidden1, 1000, 750, 'hidden2')
   hidden3 = nn_layer(hidden2, 750, 500, 'hidden3')
   hidden4 = nn_layer(hidden3, 500, 250, 'hidden4')
@@ -105,7 +105,7 @@ def train():
       else:  # Record a summary
         summary, _ = sess.run([merged, train_step], feed_dict=feed_dict(True))
         train_writer.add_summary(summary, i)
-    if i % FLAGS.svg_interval == 0:
+    if i % FLAGS.hist_interval == 0:
       save_hist(i)
   train_writer.close()
   test_writer.close()
@@ -117,9 +117,15 @@ def train():
   #print("Model saved in file: %s" % save_path)
 
 def main(_):
-  #if tf.gfile.Exists(FLAGS.log_dir):
-  #  tf.gfile.DeleteRecursively(FLAGS.log_dir)
-  #tf.gfile.MakeDirs(FLAGS.log_dir)
+  # init tensor_borad_logdir
+  tensor_borad_logdir = FLAGS.log_dir + '/tb/dnn'
+  if tf.gfile.Exists(tensor_borad_logdir):
+    tf.gfile.DeleteRecursively(tensor_borad_logdir)
+  tf.gfile.MakeDirs(tensor_borad_logdir)
+  # init histgram_logdir
+  histgram_logdir = FLAGS.log_dir + '/svg'
+  if not tf.gfile.Exists(histgram_logdir):
+    tf.gfile.MakeDirs(histgram_logdir)
   train()
 
 if __name__ == '__main__':
